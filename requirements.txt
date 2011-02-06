@@ -5,7 +5,7 @@
 # sudo apt-get install rdiff-backup
 
 django
-# Or, if 1.1 is enough (or the changes provided there required):
+# Or, if 1.1 is enough (or the changes provided in the following required):
 # -e git+http://github.com/mrts/django.git@1.1.X-mergequeue#egg=django
 
 south
@@ -25,7 +25,10 @@ git+http://github.com/mrts/django-commands.git
 # sudo install what?
 # PIL
 #
-# Setting up pylibmc is non-trivial, details at https://gist.github.com/334682
+# (In older Ubuntus, setting up pylibmc is non-trivial,
+# details at https://gist.github.com/334682 )
+# git clone git://gist.github.com/334682.git pylibmc-django-backend
+# sudo apt-get install libmemcached-dev
 # pylibmc
 
 # --- Generally useful ---
