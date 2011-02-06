@@ -1,0 +1,45 @@
+# --- Required for fabfile.py to work ---
+#
+# Be sure to install rdiff-backup with apt-get:
+#
+# sudo apt-get install rdiff-backup
+
+django
+# Or, if 1.1 is enough (or the changes provided there required):
+# -e git+http://github.com/mrts/django.git@1.1.X-mergequeue#egg=django
+
+south
+git+http://github.com/mrts/django-commands.git
+
+# --- Essential, but not required ---
+#
+# Essential packages that use C extensions. Alternatively, can be installed
+# system-wide and linked into the virtualenv.
+#
+# sudo apt-get install python-dev libxml2-dev libxslt-dev
+# lxml
+#
+# sudo apt-get install libpq-dev python-egenix-mx-base-dev
+# psycopg2
+#
+# sudo install what?
+# PIL
+#
+# Setting up pylibmc is non-trivial, details at https://gist.github.com/334682
+# pylibmc
+
+# --- Generally useful ---
+#
+# The following are not strictly required by fabfile.py,
+# but useful in most projects.
+decorator
+
+# --- Goodies ---
+#
+# Some goodies that tend to be useful.
+#
+# django-debug-toolbar
+# django-devserver
+# django-extensions
+# django-rosetta
+# unidecode
