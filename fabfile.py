@@ -174,9 +174,9 @@ def deploy(variant):
         env.reset_data_from(ENVIRONMENTS['live'])
     elif variant == 'live':
         if _yes("Backup dabase?"):
-            self.backup_database()
+            env.backup_database()
         if _yes("Backup uploads?"):
-            self.backup_uploads()
+            env.backup_uploads()
     env.migrate_database()
     env.reload_wsgi()
 
