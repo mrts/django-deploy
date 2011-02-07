@@ -28,11 +28,14 @@ Additionally, fabfile_conf.py is required with the following strings:
 """
 
 from __future__ import with_statement
-import os, tempfile
+import os
+import tempfile
+
 from fabric import api as fab
 from fabric.utils import abort
 
-from fabfile_conf import *
+import fabfile_conf as conf
+
 
 WHEREAMI = os.path.dirname(os.path.abspath(__file__))
 
@@ -44,7 +47,7 @@ class ProjectEnvironment(object):
         self._django_version = None
 
     def pull_updates(self):
-        with fab.cd(os.path.join(self.path, SRC_DIR)):
+        with fab.cd(os.path.join(self.path, conf.SRC_DIR)):
             fab.run("git pull")
 
     def reset_data_from(self, other_env):
@@ -65,10 +68,10 @@ class ProjectEnvironment(object):
             return
 
         with fab.cd(self.projdir):
-            other_uploads_dir = os.path.join(other_env.projdir, UPLOADS_DIR)
-            fab.run('mv %s %s.bak'  % (UPLOADS_DIR, UPLOADS_DIR))
-            fab.run('cp -a %s %s'    % (other_uploads_dir, UPLOADS_DIR))
-            fab.run('rm -r %s.bak'  % UPLOADS_DIR)
+            other_uploads_dir = os.path.join(other_env.projdir, conf.UPLOADS_DIR)
+            fab.run('mv %s %s.bak' % (conf.UPLOADS_DIR, conf.UPLOADS_DIR))
+            fab.run('cp -a %s %s' % (other_uploads_dir, conf.UPLOADS_DIR))
+            fab.run('rm -r %s.bak' % conf.UPLOADS_DIR)
 
     def backup_data(self):
         db_backup_file = self.backup_database()
@@ -80,36 +83,36 @@ class ProjectEnvironment(object):
             fab.run('./manage.py migrate')
 
     def reload_wsgi(self):
-        with fab.cd(os.path.join(self.path, SRC_DIR)):
+        with fab.cd(os.path.join(self.path, conf.SRC_DIR)):
             fab.run('touch app.wsgi')
 
     def clear_cache(self):
-        if CACHE_CLEAR_MODELS:
+        if conf.CACHE_CLEAR_MODELS:
             print "Clearing cache"
             with fab.cd(self.projdir):
-                fab.run('./manage.py cache_clear %s' % CACHE_CLEAR_MODELS)
+                fab.run('./manage.py cache_clear %s' % conf.CACHE_CLEAR_MODELS)
         else:
             print "CACHE_CLEAR_MODELS is empty, not clearing cache"
 
     @property
     def projdir(self):
-        return os.path.join(self.path, SRC_DIR, PROJECT_NAME)
+        return os.path.join(self.path, conf.SRC_DIR, conf.PROJECT_NAME)
 
     @property
     def backupdir(self):
-        return os.path.join(self.path, BACKUP_DIR)
+        return os.path.join(self.path, conf.BACKUP_DIR)
 
     def backup_uploads(self):
-        uploads_dir = os.path.join(self.projdir, UPLOADS_DIR)
+        uploads_dir = os.path.join(self.projdir, conf.UPLOADS_DIR)
         uploads_backup_dir = os.path.join(self.backupdir,
-                '%s_%s_uploads' % (PROJECT_NAME, self.name))
+                '%s_%s_uploads' % (conf.PROJECT_NAME, self.name))
         fab.run('rdiff-backup %s %s' % (uploads_dir, uploads_backup_dir))
         return uploads_backup_dir
 
     def backup_database(self):
         with fab.cd(self.projdir):
             backup_file_prefix = os.path.join(self.backupdir,
-                    'db_backup_%s_%s' % (PROJECT_NAME, self.name))
+                    'db_backup_%s_%s' % (conf.PROJECT_NAME, self.name))
             result = fab.run('./manage.py db_backup %s' % backup_file_prefix)
             assert (result.succeeded and
                     result.find("successfully backed up to:") > 0)
@@ -160,9 +163,9 @@ class ProjectEnvironment(object):
 
 ENVIRONMENTS = {
         'stage': ProjectEnvironment('stage',
-            path=os.path.join(PROJECT_BASE_PATH, 'stage')),
+            path=os.path.join(conf.PROJECT_BASE_PATH, 'stage')),
         'live':  ProjectEnvironment('live',
-            path=os.path.join(PROJECT_BASE_PATH, 'live')),
+            path=os.path.join(conf.PROJECT_BASE_PATH, 'live')),
 }
 
 def deploy(variant):
@@ -190,7 +193,7 @@ def fetch_data(variant):
     to local (presumably development) environment."""
     if len(fab.env.hosts) != 1:
         abort("Use this with a single host")
-    project_dir = os.path.join(WHEREAMI, SRC_DIR, PROJECT_NAME)
+    project_dir = os.path.join(WHEREAMI, conf.SRC_DIR, conf.PROJECT_NAME)
 
     env = ENVIRONMENTS[variant]
     db_backup_file, upload_backup_dir = env.backup_data()
